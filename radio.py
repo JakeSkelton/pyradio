@@ -38,7 +38,7 @@ while True:
         prompt = input()
         try:
             if prompt.isdigit():
-                station = stations_array[int(prompt)+1]
+                station = stations_array[int(prompt)-1]
             else:
                 station = stations_dict[prompt]
             media = instance.media_new(station)
