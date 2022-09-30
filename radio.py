@@ -23,15 +23,16 @@ stations_dict = {
     'FIP jazz':'http://icecast.radiofrance.fr/fipjazz-hifi.aac',
     'Jungletrain':'http://jungletrain.net/128kbps.pls',
 }
-stations_array = list(stations_dict.values())
+stations = list(stations_dict.keys())
+urls = list(stations_dict.values())
 
 instance = vlc.Instance()
 player = instance.media_player_new()
 
 print("Please choose a radio station from the following:")
 i = 1
-for key in stations_dict.keys()[1:]:
-    print("%d: %s"%(i, key))
+for s in stations[1:]:
+    print("%d: %s"%(i, s))
     i += 1
 
 while True:
@@ -39,18 +40,18 @@ while True:
         prompt = input()
         try:
             if prompt.isdigit():
-                station = stations_array[int(prompt)]
+                url = urls[int(prompt)]
             else:
-                station = stations_dict[prompt]
-            if station:  # If station not empty string
-                media = instance.media_new(station)
+                url = stations_dict[prompt]
+            if url:  # If station not empty string
+                media = instance.media_new(url)
             else:
                 continue
         except Exception as e:
             print("Input not parseable: ", e)
             continue
 
-        print("Connecting to %s"%(station))
+        print("Connecting to %s"%url)
         player.set_media(media)
         player.play()
 
