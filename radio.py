@@ -3,7 +3,7 @@
 File: radio.py
 Created Date: 21 Sep 2022
 Author: Jake Skelton
-Date Modified: Wed Sep 21 2022
+Date Modified: Fri Sep 30 2022
 Copyright (c): 2022 Jake Skelton
 '''
 
@@ -12,6 +12,7 @@ import sys
 import vlc
 
 stations_dict = {
+    'q':'',  # Stop playing
     'NTS 1':'http://stream-relay-geo.ntslive.net/stream',
     'NTS 2':'http://stream-relay-geo.ntslive.net/stream2',
     'Rinse FM':'http://206.189.117.157:8000/stream',
@@ -38,12 +39,15 @@ while True:
         prompt = input()
         try:
             if prompt.isdigit():
-                station = stations_array[int(prompt)-1]
+                station = stations_array[int(prompt)]
             else:
                 station = stations_dict[prompt]
-            media = instance.media_new(station)
+            if station:  # If station not empty string
+                media = instance.media_new(station)
+            else:
+                continue
         except Exception as e:
-            print("Input not parseable: ", ke)
+            print("Input not parseable: ", e)
             continue
 
         print("Connecting to %s"%(station))
