@@ -30,7 +30,7 @@ player = instance.media_player_new()
 
 print("Please choose a radio station from the following:")
 i = 1
-for key in stations_dict.keys():
+for key in stations_dict.keys()[1:]:
     print("%d: %s"%(i, key))
     i += 1
 
