@@ -3,13 +3,23 @@
 File: radio.py
 Created Date: 21 Sep 2022
 Author: Jake Skelton
-Date Modified: Fri Sep 30 2022
+Date Modified: Sun Oct 09 2022
 Copyright (c): 2022 Jake Skelton
 '''
 
 import os
 import sys
 import vlc
+import argparse
+
+
+def get_cmd_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('station', type=str, nargs='?', default='',
+                        help="Input station as command-line argument")
+    args = parser.parse_args()
+    return args.station
+
 
 stations_dict = {
     'q':'',  # Stop playing
@@ -26,34 +36,41 @@ stations_dict = {
 stations = list(stations_dict.keys())
 urls = list(stations_dict.values())
 
-instance = vlc.Instance()
-player = instance.media_player_new()
+if __name__ == '__main__':
+    instance = vlc.Instance()
+    player = instance.media_player_new()
+    cli_station = get_cmd_args()
 
-print("Please choose a radio station from the following:")
-i = 1
-for s in stations[1:]:
-    print("%d: %s"%(i, s))
-    i += 1
+    print("Please choose a radio station from the following:")
+    i = 1
+    for s in stations[1:]:
+        print("%d: %s"%(i, s))
+        i += 1
 
-while True:
-    try:
-        prompt = input()
+    while True:
         try:
-            if prompt.isdigit():
-                url = urls[int(prompt)]
+            if cli_station:
+                prompt = cli_station
+                cli_station = ''
             else:
-                url = stations_dict[prompt]
-            if url:  # If station not empty string
-                media = instance.media_new(url)
-            else:
+                prompt = input()
+            try:
+                if prompt.isdigit():
+                    url = urls[int(prompt)]
+                else:
+                    url = stations_dict[prompt]
+                if url:  # If station not empty string
+                    media = instance.media_new(url)
+                else:   # Station is empty string, implies stop playing
+                    player.stop()
+                    continue
+            except Exception as e:
+                print("Input not parseable: ", e)
                 continue
-        except Exception as e:
-            print("Input not parseable: ", e)
-            continue
 
-        print("Connecting to %s"%url)
-        player.set_media(media)
-        player.play()
+            print("Connecting to %s"%url)
+            player.set_media(media)
+            player.play()
 
-    except KeyboardInterrupt:
-        break
+        except KeyboardInterrupt:
+            break
